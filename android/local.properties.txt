@@ -1,0 +1,1 @@
+sdk.dir=C:\\Users\\malli\\AppData\\Local\\Android\\Sdk

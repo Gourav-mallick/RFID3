@@ -1,45 +1,40 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+// App.js
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+// Screens
+import SplashScreen from './src/screens/SplashScreen';
+import LoginScreen from './src/screens/LoginScreen';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+import AttendanceCycleScreen from './src/screens/AttendanceCycleScreen';
+import RfidSrartRegAttenScreen from './src/screens/RfidSrartRegAttenScreen';
+import CardWriteScreen from './src/screens/CardWriteScreen';
+import ClassDetailsScreen from './src/screens/ClassDetailsScreen';
+import OverviewScreen from './src/screens/OverviewScreen';
+const Stack = createNativeStackNavigator();
 
+export default function App() {
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Splash"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen
+          name="RfidSrartRegAtten"
+          component={RfidSrartRegAttenScreen}
+        />
+        <Stack.Screen name="CardWrite" component={CardWriteScreen} />
+        <Stack.Screen
+          name="AttendanceCycle"
+          component={AttendanceCycleScreen}
+        />
+        <Stack.Screen name="ClassDetails" component={ClassDetailsScreen} />
+        <Stack.Screen name="Overview" component={OverviewScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;
