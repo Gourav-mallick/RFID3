@@ -1,6 +1,7 @@
 // src/components/AttendanceSummaryModal.js
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import PrimaryButton from "../common/Button/PrimaryButton";
 
 export default function AttendanceSummaryModal({
   visible,
@@ -27,17 +28,10 @@ export default function AttendanceSummaryModal({
           <Text>Un-Scheduled Students: {unScheduledCount}</Text>
 
           <View style={styles.btnRow}>
-            <TouchableOpacity style={styles.button} onPress={onClose}>
-              <Text>Cancel</Text>
-            </TouchableOpacity>
+            <PrimaryButton title={"Cancel"} onPress={onClose}/>
+            <PrimaryButton title={"Show List"} onPress={onShowList}/>
 
-            <TouchableOpacity style={styles.button} onPress={onShowList}>
-              <Text>Show List</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={onSubmit}>
-              <Text>Submit</Text>
-            </TouchableOpacity>
+            <PrimaryButton title={"Submit"} onPress={onSubmit}/>
           </View>
         </View>
       </View>

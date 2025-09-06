@@ -1,6 +1,185 @@
 {
-  "users": [
-    { "id": 1, "name": "Alice", "age": 25 },
-    { "id": 2, "name": "Bob", "age": 30 }
+  "institution": {
+    "instId": "INST001",
+    "instShortName": "DigiEdu",
+    "academicYear": "2025-26",
+    "academicYearShortName": "AY25",
+    "mpId": "MP001",
+    "mpShortName": "Morning",
+    "classId": "CLS001",
+    "classShortName": "10A",
+    "studentClass": "10th Grade",
+    "subjectId": "SUB001",
+    "subjectShortName": "Math",
+    "teacherId": "TCH001",
+    "teacherShortName": "Mr. Sharma"
+  },
+  "reports": [
+    {
+      "id": "REP001",
+      "reportId": "REP001",
+      "title": "Monthly Attendance Report",
+      "createdDate": "2025-08-01",
+      "author": "Admin"
+    }
+  ],
+  "studentRegistrations": [
+    {
+      "id": "REG001",
+      "regId": "REG001",
+      "stuId": "STU001",
+      "classId": "CLS001",
+      "subjectId": "SUB001",
+      "rollNo": "01"
+    }
+  ],
+  "subjectDetails": [
+    {
+      "id": "SUB001",
+      "subId": "SUB001",
+      "subName": "Mathematics",
+      "teacherId": "TCH001",
+      "credit": 4
+    },
+    {
+      "id": "SUB002",
+      "subId": "SUB002",
+      "subName": "Science",
+      "teacherId": "TCH002",
+      "credit": 3
+    }
+  ],
+  "rollNumbers": [
+    { "id": 1, "stuId": "STU001", "rollNo": "01" },
+    { "id": 2, "stuId": "STU002", "rollNo": "02" }
+  ],
+  "attendance": [
+    {
+      "id": "ATT001",
+      "attId": "ATT001",
+      "stuId": "STU001",
+      "classId": "CLS001",
+      "periodId": "PER001",
+      "status": "Present",
+      "attCode": "P",
+      "attCodeId": "1",
+      "createdDate": "2025-09-01T09:00:00",
+      "modifiedDate": "2025-09-01T10:00:00"
+    },
+    {
+      "id": "ATT002",
+      "attId": "ATT002",
+      "stuId": "STU002",
+      "classId": "CLS001",
+      "periodId": "PER001",
+      "status": "Absent",
+      "attCode": "A",
+      "attCodeId": "2",
+      "createdDate": "2025-09-01T09:00:00",
+      "modifiedDate": "2025-09-01T10:00:00"
+    }
+  ],
+  "periods": [
+    {
+      "id": "PER001",
+      "periodId": "PER001",
+      "periodTitle": "Math Class",
+      "periodStart": "09:00",
+      "periodEnd": "10:00"
+    },
+    {
+      "id": "PER002",
+      "periodId": "PER002",
+      "periodTitle": "Science Class",
+      "periodStart": "10:15",
+      "periodEnd": "11:15"
+    }
+  ],
+  "institutionData": {
+    "id": "INST001",
+    "idWithName": "INST001 - DigiEdu",
+    "syear": "2025"
+  },
+  "students": [
+    {
+      "id": "STU001",
+      "stuId": "STU001",
+      "firstName": "Amit",
+      "middleName": "Kumar",
+      "lastName": "Sharma",
+      "studentName": "Amit Kumar Sharma",
+      "altId": "ALT001",
+      "rollNo": "01",
+      "classId": "CLS001"
+    },
+    {
+      "id": "STU002",
+      "stuId": "STU002",
+      "firstName": "Riya",
+      "middleName": "",
+      "lastName": "Singh",
+      "studentName": "Riya Singh",
+      "altId": "ALT002",
+      "rollNo": "02",
+      "classId": "CLS001"
+    }
+  ],
+  "classes": [
+    {
+      "id": "CLS001",
+      "classId": "CLS001",
+      "className": "10A"
+    },
+    {
+      "id": "CLS002",
+      "classId": "CLS002",
+      "className": "10B"
+    }
+  ],
+  "subjects": [
+    {
+      "id": "SUB001",
+      "subId": "SUB001",
+      "courseName": "Mathematics",
+      "className": "10A",
+      "mpLongTitle": "Morning Period",
+      "mpId": "MP001",
+      "courId": "COUR001"
+    },
+    {
+      "id": "SUB002",
+      "subId": "SUB002",
+      "courseName": "Science",
+      "className": "10A",
+      "mpLongTitle": "Morning Period",
+      "mpId": "MP001",
+      "courId": "COUR002"
+    }
+  ],
+  "teachers": [
+    {
+      "id": "TCH001",
+      "teacherId": "TCH001",
+      "teacherName": "Mr. Sharma",
+      "email": "sharma@school.com",
+      "phone": "9876543210"
+    },
+    {
+      "id": "TCH002",
+      "teacherId": "TCH002",
+      "teacherName": "Mrs. Verma",
+      "email": "verma@school.com",
+      "phone": "9876501234"
+    }
+  ],
+  "login": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "password",
+      "userType": "institute",
+      "institute": "collegeA"
+      
+    }
   ]
 }

@@ -1,7 +1,7 @@
 // src/components/ForceCloseModal.js
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
-
+import PrimaryButton from "../common/Button/PrimaryButton";
 export default function ForceCloseModal({ visible, onClose, onConfirm }) {
   return (
     <Modal transparent={true} visible={visible} animationType="fade">
@@ -11,19 +11,8 @@ export default function ForceCloseModal({ visible, onClose, onConfirm }) {
           <Text style={styles.modalText}>Ensure Text</Text>
 
           <View style={styles.modalBtnRow}>
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: "#999" }]}
-              onPress={onClose}
-            >
-              <Text style={styles.modalBtnText}>No</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: "#4caf50" }]}
-              onPress={onConfirm}
-            >
-              <Text style={styles.modalBtnText}>Yes</Text>
-            </TouchableOpacity>
+            <PrimaryButton title={"No"} onPress={onClose}/>
+           <PrimaryButton title={"Yes"} onPress={onConfirm}/>
           </View>
         </View>
       </View>

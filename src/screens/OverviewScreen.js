@@ -2,11 +2,13 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import AttendanceSummaryModal from "../components/AttendanceSummaryModal";
+import AttendanceSummaryModal from "../components/Modals/AttendanceSummaryModal";
+import PrimaryButton from "../components/common/Button/PrimaryButton";
+import DateTimeDisplay from "../components/common/DateTimeDisplay/DateTimeDisplay";
 
 export default function OverviewScreen({ navigation }) {
+  
   const teacherName = "Teacher Name"; // later from API
-  const dateTime = new Date().toLocaleString();
 
   const [period, setPeriod] = useState(null);
   const [subject, setSubject] = useState(null);
@@ -30,13 +32,12 @@ const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.dateText}>{dateTime}</Text>
+      <DateTimeDisplay />
+      
       <Text style={styles.teacherText}>Teacher : {teacherName}</Text>
 
       {/* Submit Class Btn */}
-      <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-        <Text style={styles.submitText}>Click to submit Class</Text>
-      </TouchableOpacity>
+      <PrimaryButton title={"Click to submit Class"} onPress={handleSubmit}/>
 
       {/* Select Period */}
       <Text style={styles.label}>Select Periods</Text>

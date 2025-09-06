@@ -1,15 +1,14 @@
 // src/components/CardScanner.js
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-} from 'react-native';
-import ForceCloseModal from '../components/ForceCloseModal';
+import { View, Text, StyleSheet } from 'react-native';
+import ReadyStep from '../components/attendance/AttendanceStep/ReadyStep';
+import ClassStep from '../components/attendance/AttendanceStep/ClassStep';
+import StaffStep from '../components/attendance/AttendanceStep/StaffStep';
+import StudentStep from '../components/attendance/AttendanceStep/StudentStep';
+import PrimaryButton from "../components/common/Button/PrimaryButton";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Dummy Student Data
-const dummyStudents = [
+const Students = [
   { id: 1, name: 'Aarav Kumar' },
   { id: 2, name: 'Sneha Sharma' },
   { id: 3, name: 'Rohan Gupta' },
@@ -19,12 +18,24 @@ const dummyStudents = [
 
 export default function CardScanner({ navigation }) {
   const [step, setStep] = useState('ready'); // ready → class → staff → student → end
-  const [dateTime, setDateTime] = useState(new Date());
+
   const [students, setStudents] = useState([]); // scanned students
   const [index, setIndex] = useState(0); // next student index
   const [showModal, setShowModal] = useState(false);
+
   const teacher = 'Mr. John Doe'; // dummy
   const classRoom = 'Class Room A'; // dummy
+
+
+  // for practicas and delete data locly
+  const clearStorage = async () => {
+  try {
+    await AsyncStorage.clear();
+    console.log("All local storage cleared!");
+  } catch (e) {
+    console.error("Error clearing storage:", e);
+  }
+};
 
   // Go to next step in flow
   const handleNext = () => {
@@ -41,17 +52,25 @@ export default function CardScanner({ navigation }) {
 
   // Simulate scanning a student card
   const handleStudentScan = () => {
-    if (index < dummyStudents.length) {
-      const newStudent = dummyStudents[index];
+    if (index < Students.length) {
+      const newStudent = Students[index];
       setStudents([...students, newStudent]);
       setIndex(index + 1);
     }
   };
-
+//handle Back To Register card screen
+const handleBackToRegister =()=>{
+           navigation.navigate('RfidSrartRegAtten');
+}
   // End cycle and go back to StartCycle
   const handleEndClass = () => {
     setStep('end');
   };
+
+  const onConfirmEnd =()=>{
+              setShowModal(false);
+              navigation.navigate('ClassDetails');
+  }
 
   useEffect(() => {
     if (step === 'end') {
@@ -64,121 +83,34 @@ export default function CardScanner({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <PrimaryButton title={"Back to Register card"} onPress={handleBackToRegister} />
+      <PrimaryButton title={"clear localy data"} onPress={clearStorage} />
       {/* READY */}
       {step === 'ready' && (
         <>
-          {/* Current Date Time */}
-          <Text style={styles.dateText}>{dateTime.toLocaleString()}</Text>
-
-          {/* Status */}
-          <Text style={styles.status}>Ready to scan</Text>
-
-          {/* Instruction */}
-          <Text style={styles.instructionTitle}>Follow Instruction</Text>
-          <Text style={styles.arrow}>⬇️</Text>
-          <Text style={styles.instructionText}>
-            1st tap class card {'\n'}
-            2nd staff card {'\n'}3 student 1-1 {'\n'}
-            and end by class card again
-          </Text>
-
-          <TouchableOpacity style={styles.scanBtn} onPress={handleNext}>
-            <Text style={styles.scanBtnText}>Start Cycle</Text>
-          </TouchableOpacity>
+          <ReadyStep onPress={handleNext}/>
         </>
+       
       )}
 
       {/* CLASS CARD */}
       {step === 'class' && (
-        <>
-          <Text style={styles.title}>Current Date Time</Text>
-          <View style={styles.cardBox}>
-            <Text style={styles.cardText}>
-              <Text style={{ fontWeight: '700' }}>Class Card </Text> {classRoom}
-            </Text>
-          </View>
-          <Text style={styles.instruction}>Next: Scan Staff Card</Text>
-          <TouchableOpacity style={styles.scanBtn} onPress={handleNext}>
-            <Text style={styles.scanBtnText}>Scan Staff</Text>
-          </TouchableOpacity>
-        </>
+       <ClassStep onPress={handleNext} classRoom={classRoom}/>
       )}
 
       {/* STAFF CARD */}
       {step === 'staff' && (
         <>
-          <Text style={styles.title}>Current Date Time</Text>
-          <View style={styles.cardBox}>
-            <Text style={styles.cardText}>
-              <Text style={{ fontWeight: '700' }}>Staff Card </Text> {teacher}
-            </Text>
-          </View>
-          <Text style={styles.instruction}>Next: Scan Students One by One</Text>
-          <TouchableOpacity style={styles.scanBtn} onPress={handleNext}>
-            <Text style={styles.scanBtnText}>Start Students</Text>
-          </TouchableOpacity>
+         <StaffStep onPress={handleNext} classRoom={classRoom} teacher={teacher}/>
         </>
       )}
 
       {/* STUDENTS */}
       {step === 'student' && (
+
         <>
-          <Text style={styles.title}>Current Date Time</Text>
-          <Text style={styles.counter}>
-            Present Students: {students.length}
-          </Text>
+        <StudentStep students={students} teacher={teacher} classRoom={classRoom} handleStudentScan={handleStudentScan} handleEndClass={handleEndClass} showModal={showModal} setShowModal={setShowModal} onConfirmEnd={onConfirmEnd}/>
 
-          {/* Student List */}
-          <FlatList
-            data={students}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.cardBox}>
-                <Text style={styles.cardText}>
-                  <Text style={{ fontWeight: '700' }}>{item.name}</Text> -
-                  Present
-                </Text>
-              </View>
-            )}
-          />
-
-          {/* Teacher + Class Info */}
-          <View style={styles.cardBox}>
-            <Text style={styles.cardText}>
-              <Text style={{ fontWeight: '700' }}>Teacher: </Text> {teacher}
-            </Text>
-          </View>
-          <View style={styles.cardBox}>
-            <Text style={styles.cardText}>
-              <Text style={{ fontWeight: '700' }}>Class: </Text> {classRoom}
-            </Text>
-          </View>
-
-          {/* Buttons */}
-          <View style={styles.btnRow}>
-            <TouchableOpacity
-              style={[styles.scanBtn, { backgroundColor: '#4caf50' }]}
-              onPress={handleStudentScan}
-            >
-              <Text style={styles.scanBtnText}>Scan Student</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.scanBtn, { backgroundColor: '#e53935' }]}
-              onPress={() => setShowModal(true)} // open popup
-            >
-              <Text style={styles.scanBtnText}>End Class</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Modal Component */}
-          <ForceCloseModal
-            visible={showModal}
-            onClose={() => setShowModal(false)}
-            onConfirm={() => {
-              setShowModal(false);
-              navigation.navigate('ClassDetails');
-            }}
-          />
         </>
       )}
 
@@ -186,6 +118,7 @@ export default function CardScanner({ navigation }) {
       {step === 'end' && (
         <Text style={styles.completed}>✅ Attendance Cycle Completed</Text>
       )}
+      
     </View>
   );
 }
