@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import DateTimeDisplay from '../../common/DateTimeDisplay/DateTimeDisplay';
 import DumyCardButton from '../../common/Button/SecondaryButton';
-
 import ForceCloseModal from '../../Modals/ForceCloseModal';
 
 export default function StudentStep({
@@ -19,6 +18,7 @@ export default function StudentStep({
   showModal,
   setShowModal,
   onConfirmEnd,
+  onStartNewClass, // new prop
 }) {
   return (
     <View style={styles.container}>
@@ -53,10 +53,16 @@ export default function StudentStep({
           onPress={handleStudentScan}
           title={'dummy All Students Scan'}
         />
-
         <DumyCardButton
-          onPress={() => setShowModal(true)} // open modal here
+          onPress={() => setShowModal(true)}
           title={'dummy class end Scan'}
+        />
+      </View>
+
+      <View style={styles.newClassBtn}>
+        <DumyCardButton
+          onPress={onStartNewClass}
+          title={'Start Another New Class'}
         />
       </View>
 
@@ -65,7 +71,7 @@ export default function StudentStep({
         onClose={() => setShowModal(false)}
         onConfirm={() => {
           setShowModal(false);
-          onConfirmEnd(); // parent handles the "end class" navigation
+          onConfirmEnd();
         }}
       />
     </View>
@@ -74,7 +80,6 @@ export default function StudentStep({
 
 const styles = StyleSheet.create({
   container: { alignItems: 'center', padding: 20 },
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 10 },
   counter: { fontSize: 16, fontWeight: '700', marginBottom: 10 },
   cardBox: {
     backgroundColor: '#d6cfcf',
@@ -90,12 +95,5 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 20,
   },
-  scanBtn: {
-    padding: 12,
-    borderRadius: 8,
-    flex: 1,
-    marginHorizontal: 5,
-    alignItems: 'center',
-  },
-  scanBtnText: { color: '#fff', fontWeight: '600' },
+  newClassBtn: { marginTop: 20, width: '100%' },
 });

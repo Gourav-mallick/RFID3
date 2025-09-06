@@ -1,4 +1,4 @@
-// src/components/CardScanner.js
+// src/screens/AttendanceCycleScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import ReadyStep from '../components/attendance/AttendanceStep/ReadyStep';
@@ -7,6 +7,7 @@ import StaffStep from '../components/attendance/AttendanceStep/StaffStep';
 import StudentStep from '../components/attendance/AttendanceStep/StudentStep';
 import PrimaryButton from "../components/common/Button/PrimaryButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // Dummy Student Data
 const Students = [
   { id: 1, name: 'Aarav Kumar' },
@@ -16,28 +17,29 @@ const Students = [
   { id: 5, name: 'Arjun Mehta' },
 ];
 
-export default function CardScanner({ navigation }) {
-  const [step, setStep] = useState('ready'); // ready → class → staff → student → end
-
-  const [students, setStudents] = useState([]); // scanned students
-  const [index, setIndex] = useState(0); // next student index
+export default function AttendanceCycleScreen({ navigation }) {
+  const [step, setStep] = useState('ready'); // ready → class → staff → student
+  const [classes, setClasses] = useState([]); // all open/ended class cycles
+  const [currentClass, setCurrentClass] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [index, setIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
-  const teacher = 'Mr. John Doe'; // dummy
-  const classRoom = 'Class Room A'; // dummy
+  // Dummy teacher/class (replace with scanned values later)
+  const teacher = 'Mr. John Doe';
+  const classRoom = 'Class Room A';
 
-
-  // for practicas and delete data locly
+  // Clear local storage
   const clearStorage = async () => {
-  try {
-    await AsyncStorage.clear();
-    console.log("All local storage cleared!");
-  } catch (e) {
-    console.error("Error clearing storage:", e);
-  }
-};
+    try {
+      await AsyncStorage.clear();
+      console.log("All local storage cleared!");
+    } catch (e) {
+      console.error("Error clearing storage:", e);
+    }
+  };
 
-  // Go to next step in flow
+  // Handle step navigation
   const handleNext = () => {
     if (step === 'ready') {
       setStep('class');
@@ -46,31 +48,57 @@ export default function CardScanner({ navigation }) {
     } else if (step === 'class') {
       setStep('staff');
     } else if (step === 'staff') {
+      // Create new class cycle
+      const newClass = {
+        id: Date.now(),
+        classRoom,
+        teacher,
+        students: [],
+        active: true,
+      };
+      setClasses([...classes, newClass]);
+      setCurrentClass(newClass);
       setStep('student');
     }
   };
 
-  // Simulate scanning a student card
+  // Add student to current class
   const handleStudentScan = () => {
-    if (index < Students.length) {
+    if (index < Students.length && currentClass) {
       const newStudent = Students[index];
+      const updated = classes.map(cls =>
+        cls.id === currentClass.id
+          ? { ...cls, students: [...cls.students, newStudent] }
+          : cls
+      );
+      setClasses(updated);
       setStudents([...students, newStudent]);
       setIndex(index + 1);
     }
   };
-//handle Back To Register card screen
-const handleBackToRegister =()=>{
-           navigation.navigate('RfidSrartRegAtten');
-}
-  // End cycle and go back to StartCycle
+
+  // Back to main register
+  const handleBackToRegister = () => {
+    navigation.navigate('RfidSrartRegAtten');
+  };
+
+  // End class → same navigation logic
   const handleEndClass = () => {
     setStep('end');
   };
 
-  const onConfirmEnd =()=>{
-              setShowModal(false);
-              navigation.navigate('ClassDetails');
-  }
+  const onConfirmEnd = () => {
+    setShowModal(false);
+
+    // Mark class inactive
+    setClasses(prev =>
+      prev.map(cls =>
+        cls.id === currentClass.id ? { ...cls, active: false } : cls
+      )
+    );
+
+    navigation.navigate('ClassDetails');
+  };
 
   useEffect(() => {
     if (step === 'end') {
@@ -84,115 +112,55 @@ const handleBackToRegister =()=>{
   return (
     <View style={styles.container}>
       <PrimaryButton title={"Back to Register card"} onPress={handleBackToRegister} />
-      <PrimaryButton title={"clear localy data"} onPress={clearStorage} />
+      <PrimaryButton title={"Clear local data"} onPress={clearStorage} />
+
       {/* READY */}
       {step === 'ready' && (
-        <>
-          <ReadyStep onPress={handleNext}/>
-        </>
-       
+        <ReadyStep
+          onPress={handleNext}
+          openClasses={classes.filter(c => c.active)}
+          onSelectClass={(cls) => {
+            setCurrentClass(cls);
+            setStudents(cls.students);
+            setStep('student');
+          }}
+        />
       )}
 
-      {/* CLASS CARD */}
+      {/* CLASS */}
       {step === 'class' && (
-       <ClassStep onPress={handleNext} classRoom={classRoom}/>
+        <ClassStep onPress={handleNext} classRoom={classRoom} />
       )}
 
-      {/* STAFF CARD */}
+      {/* STAFF */}
       {step === 'staff' && (
-        <>
-         <StaffStep onPress={handleNext} classRoom={classRoom} teacher={teacher}/>
-        </>
+        <StaffStep onPress={handleNext} classRoom={classRoom} teacher={teacher} />
       )}
 
       {/* STUDENTS */}
-      {step === 'student' && (
-
-        <>
-        <StudentStep students={students} teacher={teacher} classRoom={classRoom} handleStudentScan={handleStudentScan} handleEndClass={handleEndClass} showModal={showModal} setShowModal={setShowModal} onConfirmEnd={onConfirmEnd}/>
-
-        </>
+      {step === 'student' && currentClass && (
+        <StudentStep
+          students={students}
+          teacher={currentClass.teacher}
+          classRoom={currentClass.classRoom}
+          handleStudentScan={handleStudentScan}
+          handleEndClass={handleEndClass}
+          showModal={showModal}
+          setShowModal={setShowModal}
+          onConfirmEnd={onConfirmEnd}
+          onStartNewClass={() => setStep('ready')}
+        />
       )}
 
       {/* END */}
       {step === 'end' && (
         <Text style={styles.completed}>✅ Attendance Cycle Completed</Text>
       )}
-      
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: { 
-    fontSize: 16, 
-    fontWeight: '600', 
-    marginBottom: 10 
-  },
-  status: { 
-    fontSize: 18, 
-    fontWeight: '700', 
-    marginBottom: 20 
-
-  },
-  instruction: { 
-    fontSize: 14, 
-    color: '#444', 
-    marginVertical: 15 
-
-  },
-  cardBox: {
-    backgroundColor: '#d6cfcf',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-    width: '100%',
-  },
-  cardText: { 
-    fontSize: 16, 
-    color: '#000' 
-
-  },
-  scanBtn: {
-    marginTop: 15,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#ff8080',
-    borderRadius: 8,
-  },
-  scanBtnText: { 
-    color: '#fff', 
-    fontWeight: '700' },
-  completed: { 
-    fontSize: 18, 
-    fontWeight: '700', 
-    color: 'green', 
-    marginTop: 20 
-
-  },
-  counter: { 
-    fontSize: 16, 
-    fontWeight: '700', 
-    marginBottom: 10 },
-  btnRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 20,
-  },
-  scanBtn: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginHorizontal: 5,
-  },
-  scanBtnText: { 
-    color: '#fff', 
-    fontWeight: '600' },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 },
+  completed: { fontSize: 18, fontWeight: '700', color: 'green', marginTop: 20 },
 });
